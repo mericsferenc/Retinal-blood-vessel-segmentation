@@ -1,26 +1,31 @@
-inputImage = imread('01_test.tif');
-%inputImage = imread('02_test.tif');
-%inputImage = imread('03_test.tif');
-%inputImage = imread('04_test.tif');
+inputImage = imread('./original_images/tif/01_test.tif');
 
+% extract the green channel
 greenChannel = inputImage(:,:,2);
 
+% noise reduction with median filtering
 I_denoised = medfilt2(greenChannel, [3 3]);
 
+% contrast enhancement using adaptive histogram equalization (CLAHE)
 I_enhanced = adapthisteq(I_denoised);
 
+% edge detection using LoG filter
 sigma = 2;
 hsize = 15;
 I_log = fspecial('log', hsize, sigma);
 I_edge = imfilter(I_enhanced, I_log, 'same', 'replicate');
 I_edge = mat2gray(abs(I_edge)); % convert to grayscale image
 
-I_sharpened = imsharpen(I_edge, 'Radius', 1, 'Amount', 1.5);
+% sharpen
+I_sharpened = imsharpen(I_edge, 'Radius', 2, 'Amount', 2);
 
+% binarize using a threshold determined by Otsu's method
 thresholdValue = graythresh(I_sharpened);
 I_binarized = imbinarize(I_sharpened, thresholdValue);
 
-I_opened = bwareaopen(I_binarized, 30);
+% morphological opening to remove small objects that are not vessels: 
+I_opened = bwareaopen(I_binarized, 50); % increasing this value reduces the number of small noises, but if it is too high, thin vessels disappear
+
 
 figure;
 subplot(2,4,1), imshow(inputImage), title('Original Image');
