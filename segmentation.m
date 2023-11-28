@@ -24,3 +24,5 @@ figure;
 subplot(1,3,1), imshow(inputImage), title('Original Image');
 subplot(1,3,2), imshow(I_matched_small_normalized, []), title('Normalized Small Vessels Gabor Response');
 subplot(1,3,3), imshow(I_sharpened, []), title('Sharpened Small Vessels Response');
+
+imwrite(I_sharpened, 'output.png');
