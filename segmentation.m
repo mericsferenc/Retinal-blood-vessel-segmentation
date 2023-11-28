@@ -1,4 +1,7 @@
 inputImage = imread('01_test.tif');
+%inputImage = imread('02_test.tif');
+%inputImage = imread('03_test.tif');
+%inputImage = imread('04_test.tif');
 
 greenChannel = inputImage(:,:,2);
 
@@ -10,12 +13,14 @@ sigma = 2;
 hsize = 15;
 I_log = fspecial('log', hsize, sigma);
 I_edge = imfilter(I_enhanced, I_log, 'same', 'replicate');
-I_edge = mat2gray(abs(I_edge));
+I_edge = mat2gray(abs(I_edge)); % convert to grayscale image
 
 I_sharpened = imsharpen(I_edge, 'Radius', 1, 'Amount', 1.5);
 
 thresholdValue = graythresh(I_sharpened);
 I_binarized = imbinarize(I_sharpened, thresholdValue);
+
+I_opened = bwareaopen(I_binarized, 30);
 
 figure;
 subplot(2,4,1), imshow(inputImage), title('Original Image');
@@ -24,3 +29,4 @@ subplot(2,4,3), imshow(I_enhanced), title('Enhanced Image');
 subplot(2,4,4), imshow(I_edge), title('LoG Filtered Image');
 subplot(2,4,5), imshow(I_sharpened), title('Sharpened Image');
 subplot(2,4,6), imshow(I_binarized), title('Binarized Image');
+subplot(2,4,7), imshow(I_opened), title('Opened Image');
